@@ -8,6 +8,7 @@ import lombok.*;
 import java.util.List;
 
 @Getter
+@Builder
 public class OrderRequest {
 
     @Valid

@@ -11,12 +11,16 @@ import java.util.List;
 @Document("order")
 @Getter
 @Setter
+@Builder
+@EqualsAndHashCode
 public class Order {
 
     @MongoId(FieldType.OBJECT_ID)
     private String id;
 
     private List<Plate> plates;
+
+    @Builder.Default
     private Status status = Status.IN_PRODUCTION;
 
     public void cancel() {

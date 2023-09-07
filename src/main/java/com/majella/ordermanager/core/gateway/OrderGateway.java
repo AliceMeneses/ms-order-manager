@@ -10,6 +10,4 @@ public interface OrderGateway {
 
     Optional<Order> search(String id);
 
-    void update(Order order);
-
 }

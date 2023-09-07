@@ -1,5 +1,6 @@
 package com.majella.ordermanager.core.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 @Document("plate")
 @Getter
 @Setter
+@Builder
 public class Plate {
 
     @MongoId(FieldType.OBJECT_ID)

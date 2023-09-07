@@ -1,6 +1,8 @@
 package com.majella.ordermanager.entrypoint.api.controller.payload.response;
 
 import com.majella.ordermanager.core.domain.Status;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@EqualsAndHashCode
 public class OrderResponse {
 
     private String id;
