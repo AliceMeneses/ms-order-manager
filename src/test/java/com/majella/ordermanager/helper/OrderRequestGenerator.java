@@ -9,13 +9,17 @@ public class OrderRequestGenerator {
 
     public static OrderRequest generate(String plateId) {
 
-        var plateRequest = PlateRequest.builder()
-                .id(plateId)
-                .quantity(2)
-                .build();
+        var plateRequest = PlateRequestGenerator.generate(plateId, 2);
 
         return OrderRequest.builder()
                 .plates(List.of(plateRequest))
+                .build();
+    }
+
+    public static OrderRequest generateWithPlates(List<PlateRequest> plates) {
+
+        return OrderRequest.builder()
+                .plates(plates)
                 .build();
     }
 

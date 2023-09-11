@@ -9,7 +9,7 @@ import java.util.List;
 
 public class OrderResponseGenerator {
 
-    public static OrderResponse generate(String id) {
+public static OrderResponse generate(String id) {
         var plateResponse = PlateResponse.builder()
                 .name("Filé de frango à parmegiana")
                 .price(new BigDecimal(40))
