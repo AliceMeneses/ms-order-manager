@@ -1,6 +1,7 @@
 package com.majella.ordermanager.core.usecase;
 
 import com.majella.ordermanager.core.gateway.PlateGateway;
+import com.majella.ordermanager.helper.PageableGenerator;
 import com.majella.ordermanager.helper.PlateGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class MenuTest {
         @Test
         @DisplayName("When get menu plates then return menu plates")
         public void whenGetMenuPlatesThenReturnMenuPlates() {
-            var pageable = PageRequest.of(0,1);
+            var pageable = PageableGenerator.generate();
 
             var plate = PlateGenerator.randomlyGenerator();
 
