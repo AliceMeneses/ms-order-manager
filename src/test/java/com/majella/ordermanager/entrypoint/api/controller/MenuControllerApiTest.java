@@ -11,8 +11,6 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import com.majella.ordermanager.helper.BaseTest;
 import com.majella.ordermanager.helper.MenuPlateResponseGenerator;
@@ -33,9 +31,6 @@ public class MenuControllerApiTest {
 
     @Autowired
     private BaseTest baseTest;
-
-    @Autowired
-    private JacksonTester<Pageable> pageableJacksonTester;
 
     @Autowired
     private JacksonTester<List<MenuPlateResponse>> menuResponseJacksonTester;
@@ -59,15 +54,16 @@ public class MenuControllerApiTest {
         @Test
         @DisplayName("When get menu plates then return menu plates")
         public void whenGetMenuPlatesThenReturnMenuPlates() throws IOException {
-            var pageable = PageRequest.of(0,2);
 
             var menuPlateWithGrilledChickenResponse = MenuPlateResponseGenerator.generateWithGrilledChicken();
             var menuPlateBeefResponse = MenuPlateResponseGenerator.generateWithBeef();
 
             String result = given()
                     .accept(JSON)
-                    .contentType((JSON))
-                    .body(pageableJacksonTester.write(pageable).getJson())
+                    .contentType(JSON)
+                    .queryParam("page", 0)
+                    .queryParam("size", 5)
+                    .queryParam("sort", "price,asc")
                 .when()
                     .get()
                 .then()

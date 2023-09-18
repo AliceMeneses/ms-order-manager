@@ -42,4 +42,17 @@ public class PlateGenerator {
                 .build();
     }
 
+    public static Plate randomlyGenerator() {
+        var recipe = RecipeGenerator.randomlyGenerater();
+
+        var FAKER = FakerJavaUtil.getFaker();
+
+        return Plate.builder()
+                .id(FAKER.number().digit())
+                .price(new BigDecimal(FAKER.number().randomNumber(2,true)))
+                .recipe(recipe)
+                .quantity(FAKER.number().randomDigit())
+                .build();
+    }
+
 }

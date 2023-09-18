@@ -1,10 +1,12 @@
 package com.majella.ordermanager.core.usecase;
 
+import com.github.javafaker.Faker;
 import com.majella.ordermanager.core.exception.PlateNotFoundException;
 import com.majella.ordermanager.core.exception.OrderCantBeCanceledException;
 import com.majella.ordermanager.core.exception.OrderNotFoundException;
 import com.majella.ordermanager.core.gateway.OrderGateway;
 import com.majella.ordermanager.core.gateway.PlateGateway;
+import com.majella.ordermanager.helper.FakerJavaUtil;
 import com.majella.ordermanager.helper.OrderGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -34,6 +36,8 @@ public class OrderManagerTest {
     @InjectMocks
     private OrderManager orderManager;
 
+    private final Faker FAKER = FakerJavaUtil.getFaker();
+
     @DisplayName("Create Test")
     @Nested
     class CreateTest {
@@ -46,10 +50,9 @@ public class OrderManagerTest {
             var referenceToTheGrilledChickenPlate = order.getPlates().get(0);
             var referenceToTheBeefPlate = order.getPlates().get(1);
 
-            var orderWithId = OrderGenerator.generateWithTwoPlates("64ec17cefc18541d85df2e27", IN_PRODUCTION);
+            var orderWithId = OrderGenerator.generateWithTwoPlates(FAKER.number().digit(), IN_PRODUCTION);
             var grilledChickenPlate = orderWithId.getPlates().get(0);
             var beefPlate = orderWithId.getPlates().get(1);
-
 
             when(plateGateway.searchById(referenceToTheGrilledChickenPlate.getId())).thenReturn(Optional.of(grilledChickenPlate));
             when(plateGateway.searchById(referenceToTheBeefPlate.getId())).thenReturn(Optional.of(beefPlate));
@@ -68,7 +71,7 @@ public class OrderManagerTest {
             var referenceToTheGrilledChickenPlate = order.getPlates().get(0);
             var referenceToTheBeefPlate = order.getPlates().get(1);
 
-            var orderWithId = OrderGenerator.generateWithTwoPlates("64ec17cefc18541d85df2e27", IN_PRODUCTION);
+            var orderWithId = OrderGenerator.generateWithTwoPlates(FAKER.number().digit(), IN_PRODUCTION);
             var grilledChickenPlate = orderWithId.getPlates().get(0);
 
             when(plateGateway.searchById(referenceToTheGrilledChickenPlate.getId())).thenReturn(Optional.of(grilledChickenPlate));
@@ -90,7 +93,7 @@ public class OrderManagerTest {
         @Test
         @DisplayName("When cancel order then change order status to canceled")
         public void whenCancelOrderThenChangeOrderStatusToCanceled() {
-            var orderId = "64ec17cefc18541d85df2e27";
+            var orderId = FAKER.number().digit();
             var inProductionOrder = OrderGenerator.generate(orderId,  IN_PRODUCTION);
 
             when(orderGateway.search(orderId)).thenReturn(Optional.of(inProductionOrder));
@@ -105,7 +108,7 @@ public class OrderManagerTest {
         @DisplayName("When cancel order there isn't then throw OrderNotFoundException")
         public void whenCancelOrderThereIsntThenThrowOrderNotFoundException() {
 
-            var orderId = "64f5af7a3be8bd9f7baf2f51";
+            var orderId = FAKER.number().digit();
 
             when(orderGateway.search(orderId)).thenReturn(Optional.empty());
 
@@ -118,7 +121,7 @@ public class OrderManagerTest {
         @DisplayName("When cancel order that is already then throw OrderCantBeCanceledException")
         public void whenCancelOrderThatIsAlreadyThenThrowOrderCantBeCanceledException() {
 
-            var readyOrder = OrderGenerator.generate("64ec17cefc18541d85df2e27", READY);
+            var readyOrder = OrderGenerator.generate(FAKER.number().digit(), READY);
 
             when(orderGateway.search(readyOrder.getId())).thenReturn(Optional.of(readyOrder));
 

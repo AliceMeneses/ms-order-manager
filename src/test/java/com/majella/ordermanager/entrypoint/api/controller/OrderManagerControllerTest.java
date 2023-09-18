@@ -1,9 +1,11 @@
 package com.majella.ordermanager.entrypoint.api.controller;
 
+import com.github.javafaker.Faker;
 import com.majella.ordermanager.core.exception.PlateNotFoundException;
 import com.majella.ordermanager.core.exception.BusinessException;
 import com.majella.ordermanager.core.usecase.OrderManager;
 import com.majella.ordermanager.entrypoint.api.mapper.OrderMapper;
+import com.majella.ordermanager.helper.FakerJavaUtil;
 import com.majella.ordermanager.helper.OrderGenerator;
 import com.majella.ordermanager.helper.OrderRequestGenerator;
 import com.majella.ordermanager.helper.OrderResponseGenerator;
@@ -34,6 +36,8 @@ public class OrderManagerControllerTest {
     @InjectMocks
     private OrderManagerController orderManagerController;
 
+    private final Faker FAKER = FakerJavaUtil.getFaker();
+
     @Nested
     @DisplayName("Create Order Test")
     class CreateOrderTest {
@@ -42,7 +46,7 @@ public class OrderManagerControllerTest {
         @DisplayName("When create order then return OrderResponse")
         public void whenCreateOrderThenReturnOrderResponse() {
 
-            var orderId = "64ec17cefc18541d85df2e27";
+            var orderId = FAKER.number().digit();
 
             var orderRequest = OrderRequestGenerator.generate();
             var order = OrderGenerator.generateReference();
@@ -61,7 +65,6 @@ public class OrderManagerControllerTest {
         @Test
         @DisplayName("When create order with plate there isn't throw BusinessException")
         public void whenCreateOrderWithPlateThereIsntThenThrowBusinessException() {
-
 
             var orderRequest = OrderRequestGenerator.generate();
             var order = OrderGenerator.generateReference();
@@ -88,7 +91,7 @@ public class OrderManagerControllerTest {
         @DisplayName("When cancel order then cancel order")
         public void whenCancelOrderThenCancelOrder() {
 
-            var id = "64ec17cefc18541d85df2e27";
+            var id = FAKER.number().digit();
 
             orderManagerController.cancel(id);
 

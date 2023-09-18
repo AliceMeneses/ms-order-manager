@@ -22,4 +22,15 @@ public class RecipeGenerator {
                 .build();
     }
 
+    public static Recipe randomlyGenerater() {
+        var ingredients = IngredientGenerator.randomlyGenerater();
+
+        var FAKER = FakerJavaUtil.getFaker();
+
+        return Recipe.builder()
+                .name(FAKER.food().dish())
+                .ingridients(List.of(ingredients))
+                .build();
+    }
+
 }

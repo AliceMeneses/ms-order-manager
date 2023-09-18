@@ -36,7 +36,7 @@ public class MenuTest {
         public void whenGetMenuPlatesThenReturnMenuPlates() {
             var pageable = PageRequest.of(0,1);
 
-            var plate = PlateGenerator.generatorGrilledChickenPlate();
+            var plate = PlateGenerator.randomlyGenerator();
 
             var page = new PageImpl<>(List.of(plate), pageable, 1);
 

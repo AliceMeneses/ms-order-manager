@@ -37,7 +37,7 @@ public class PlateDatabaseTest {
         public void whenListPlatesThenReturnAPageOfPlates() {
             var pageable = PageRequest.of(0,1);
 
-            var plate = PlateGenerator.generatorGrilledChickenPlate();
+            var plate = PlateGenerator.randomlyGenerator();
 
             var page = new PageImpl<>(List.of(plate), pageable, 1);
 
@@ -55,9 +55,9 @@ public class PlateDatabaseTest {
     class SearchPlateByIdTest {
 
         @Test
-        @DisplayName("When list plates then return a page of plates")
-        public void whenListPlatesThenReturnAPageOfPlates() {
-            var plate = PlateGenerator.generatorGrilledChickenPlate();
+        @DisplayName("When search plate by id then return plate")
+        public void whenSearchPlateByIdThenReturnPlate() {
+            var plate = PlateGenerator.randomlyGenerator();
 
             when(plateRepository.findById(plate.getId())).thenReturn(Optional.of(plate));
 

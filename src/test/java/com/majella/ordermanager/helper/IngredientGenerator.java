@@ -18,4 +18,13 @@ public class IngredientGenerator {
                 .build();
     }
 
+    public static Ingredient randomlyGenerater() {
+        var FAKER = FakerJavaUtil.getFaker();
+
+        return Ingredient.builder()
+                .name(FAKER.food().ingredient())
+                .quantity(FAKER.number().randomDigit())
+                .build();
+    }
+
 }
