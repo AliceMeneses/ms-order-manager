@@ -4,10 +4,17 @@ import com.majella.ordermanager.core.domain.Ingredient;
 
 public class IngredientGenerator {
 
-    public static Ingredient generate(String name, Integer quantity) {
+    public static Ingredient generaterChickenIngredient() {
         return Ingredient.builder()
-                .name(name)
-                .quantity(quantity)
+                .name("Filé de frango")
+                .quantity(1)
+                .build();
+    }
+
+    public static Ingredient generaterRumpIngredient() {
+        return Ingredient.builder()
+                .name("Alcatra")
+                .quantity(1)
                 .build();
     }
 

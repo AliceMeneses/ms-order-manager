@@ -1,7 +1,7 @@
 package com.majella.ordermanager.entrypoint.api.controller;
 
-import com.majella.ordermanager.core.exception.BusinessException;
 import com.majella.ordermanager.core.exception.PlateNotFoundException;
+import com.majella.ordermanager.core.exception.BusinessException;
 import com.majella.ordermanager.core.usecase.OrderManager;
 import com.majella.ordermanager.entrypoint.api.mapper.OrderMapper;
 import com.majella.ordermanager.helper.OrderGenerator;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.majella.ordermanager.core.domain.Status.IN_PRODUCTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
@@ -39,14 +40,13 @@ public class OrderManagerControllerTest {
 
         @Test
         @DisplayName("When create order then return OrderResponse")
-        public void whenCreateOrderThenReturOrderResponse() {
+        public void whenCreateOrderThenReturnOrderResponse() {
 
             var orderId = "64ec17cefc18541d85df2e27";
-            var plateId = "64ec07ee6e17f2e337a9fbc1";
 
-            var orderRequest = OrderRequestGenerator.generate(plateId);
-            var order = OrderGenerator.generate(null, plateId);
-            var orderWithId = OrderGenerator.generate(orderId, plateId);
+            var orderRequest = OrderRequestGenerator.generate();
+            var order = OrderGenerator.generateReference();
+            var orderWithId = OrderGenerator.generate(orderId, IN_PRODUCTION);
             var orderResponse = OrderResponseGenerator.generate(orderId);
 
             when(orderMapper.toDomain(orderRequest)).thenReturn(order);
@@ -62,11 +62,12 @@ public class OrderManagerControllerTest {
         @DisplayName("When create order with plate there isn't throw BusinessException")
         public void whenCreateOrderWithPlateThereIsntThenThrowBusinessException() {
 
-            var plateId = "64f4c8cab35055bb9b2576b7";
-            var plateNotFoundException = new PlateNotFoundException(plateId);
 
-            var orderRequest = OrderRequestGenerator.generate(plateId);
-            var order = OrderGenerator.generate(null, plateId);
+            var orderRequest = OrderRequestGenerator.generate();
+            var order = OrderGenerator.generateReference();
+
+            var plateId = orderRequest.getPlates().get(0).getId();
+            var plateNotFoundException = new PlateNotFoundException(plateId);
 
             when(orderMapper.toDomain(orderRequest)).thenReturn(order);
             when(orderManager.create(order)).thenThrow(plateNotFoundException);

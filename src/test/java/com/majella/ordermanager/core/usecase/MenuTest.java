@@ -1,9 +1,7 @@
 package com.majella.ordermanager.core.usecase;
 
 import com.majella.ordermanager.core.gateway.PlateGateway;
-import com.majella.ordermanager.helper.IngredientGenerator;
 import com.majella.ordermanager.helper.PlateGenerator;
-import com.majella.ordermanager.helper.RecipeGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,13 +36,7 @@ public class MenuTest {
         public void whenGetMenuPlatesThenReturnMenuPlates() {
             var pageable = PageRequest.of(0,1);
 
-            var plateId = "64f4d44eb35055bb9b2576b8";
-            var plateName = "Filé de frango grelhado";
-            var platePrice = new BigDecimal(40);
-
-            var plateIngredient = IngredientGenerator.generate("Filé de frango",1);
-            var plateRecipe = RecipeGenerator.generate(plateName, List.of(plateIngredient));
-            var plate = PlateGenerator.generator(plateId, platePrice, plateRecipe, 2);
+            var plate = PlateGenerator.generatorGrilledChickenPlate();
 
             var page = new PageImpl<>(List.of(plate), pageable, 1);
 

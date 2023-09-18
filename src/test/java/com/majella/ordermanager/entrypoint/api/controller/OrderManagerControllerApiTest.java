@@ -3,9 +3,10 @@ package com.majella.ordermanager.entrypoint.api.controller;
 import com.majella.ordermanager.entrypoint.api.controller.payload.request.OrderRequest;
 import com.majella.ordermanager.entrypoint.api.controller.payload.request.PlateRequest;
 import com.majella.ordermanager.entrypoint.api.controller.payload.response.OrderResponse;
-import com.majella.ordermanager.helper.*;
+import com.majella.ordermanager.helper.BaseTest;
+import com.majella.ordermanager.helper.OrderRequestGenerator;
+import com.majella.ordermanager.helper.OrderResponseGenerator;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
@@ -19,13 +20,15 @@ import java.io.IOException;
 import java.util.List;
 
 import static io.restassured.RestAssured.*;
+import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.http.HttpStatus.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureJsonTesters
-public class OrderManagerControllerTestApi {
+public class OrderManagerControllerApiTest {
 
     @Autowired
     private BaseTest baseTest;
@@ -56,12 +59,12 @@ public class OrderManagerControllerTestApi {
         @DisplayName("When create order then return order response and status 201")
         public void whenCreateOrderThenReturnOrderResponseAndStatus201() throws IOException {
 
-            var orderRequest = OrderRequestGenerator.generate("64fe7441f968b2939fdd01c6");
+            var orderRequest = OrderRequestGenerator.generate();
             var orderResponse = OrderResponseGenerator.generate("64fe82fbf968b2939fdd01c7");
 
             String result = given()
-                    .accept(ContentType.JSON)
-                    .contentType((ContentType.JSON))
+                    .accept(JSON)
+                    .contentType(JSON)
                     .body(orderRequestJacksonTester.write(orderRequest).getJson())
                 .when()
                     .post()
@@ -86,15 +89,15 @@ public class OrderManagerControllerTestApi {
             var orderRequest = OrderRequestGenerator.generateWithPlates(null);
 
             given()
-                    .accept(ContentType.JSON)
-                    .contentType((ContentType.JSON))
+                    .accept(JSON)
+                    .contentType(JSON)
                     .body(orderRequestJacksonTester.write(orderRequest).getJson())
                 .when()
                     .post()
                 .then()
                     .body("descriptions", hasSize(1))
                     .body("descriptions", hasItem("plates is required"))
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(BAD_REQUEST.value());
         }
 
         @Test
@@ -104,15 +107,15 @@ public class OrderManagerControllerTestApi {
             var orderRequest = OrderRequestGenerator.generateWithPlates(List.of());
 
             given()
-                    .accept(ContentType.JSON)
-                    .contentType((ContentType.JSON))
+                    .accept(JSON)
+                    .contentType((JSON))
                     .body(orderRequestJacksonTester.write(orderRequest).getJson())
                 .when()
                     .post()
                 .then()
                     .body("descriptions", hasSize(1))
                     .body("descriptions", hasItem("plates size must be at least 1"))
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(BAD_REQUEST.value());
         }
 
         @Test
@@ -122,8 +125,8 @@ public class OrderManagerControllerTestApi {
             var orderRequest = OrderRequestGenerator.generateWithPlates(List.of(new PlateRequest()));
 
             given()
-                    .accept(ContentType.JSON)
-                    .contentType((ContentType.JSON))
+                    .accept(JSON)
+                    .contentType(JSON)
                     .body(orderRequestJacksonTester.write(orderRequest).getJson())
                 .when()
                     .post()
@@ -131,20 +134,18 @@ public class OrderManagerControllerTestApi {
                     .body("descriptions", hasSize(2))
                     .body("descriptions", hasItem("plates[0].id cannot be blank"))
                     .body("descriptions", hasItem("plates[0].quantity is required"))
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(BAD_REQUEST.value());
         }
 
         @Test
         @DisplayName("When create order with plate with negative quantitty or zero then return validation message and status 400")
         public void whenCreateOrderWithPlateWithNegativeQuantityOrZeroThenReturnValidationMessageAndStatus400() throws IOException {
 
-            var plate1Request = PlateRequestGenerator.generate("64fe7441f968b2939fdd01c6", -4);
-            var plate2Request = PlateRequestGenerator.generate("64f4d464b35055bb9b2576b9", 0);
-            var orderRequest = OrderRequestGenerator.generateWithPlates(List.of(plate1Request, plate2Request));
+            var orderRequest = OrderRequestGenerator.generateWithPlatesInNegativeAndZeroQuantity();
 
             given()
-                    .accept(ContentType.JSON)
-                    .contentType((ContentType.JSON))
+                    .accept(JSON)
+                    .contentType(JSON)
                     .body(orderRequestJacksonTester.write(orderRequest).getJson())
                 .when()
                     .post()
@@ -152,27 +153,25 @@ public class OrderManagerControllerTestApi {
                     .body("descriptions", hasSize(2))
                     .body("descriptions", hasItem("plates[1].quantity must be greater than 0"))
                     .body("descriptions", hasItem("plates[0].quantity must be greater than 0"))
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(BAD_REQUEST.value());
         }
 
         @Test
         @DisplayName("When create order with plate that doesn't exist then return business message and status 400")
         public void whenCreateOrderWithPlateThatDoesntExistThenReturnBusinessMessageAndStatus400() throws IOException {
 
-            var plateId = "44fb7691f368b2937fdd01a9";
-            var plateRequest = PlateRequestGenerator.generate(plateId, 1);
-            var orderRequest = OrderRequestGenerator.generateWithPlates(List.of(plateRequest));
+            var orderRequest = OrderRequestGenerator.generateWithPlatesThatDoesntExist();
 
             given()
-                    .accept(ContentType.JSON)
-                    .contentType((ContentType.JSON))
+                    .accept(JSON)
+                    .contentType(JSON)
                     .body(orderRequestJacksonTester.write(orderRequest).getJson())
                 .when()
                     .post()
                 .then()
                     .body("descriptions", hasSize(1))
-                    .body("descriptions", hasItem(String.format("There isn't plate for id %s", plateId)))
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .body("descriptions", hasItem(String.format("There isn't plate for id %s", orderRequest.getPlates().get(0).getId())))
+                    .statusCode(BAD_REQUEST.value());
         }
 
     }
@@ -183,27 +182,27 @@ public class OrderManagerControllerTestApi {
 
         @Test
         @DisplayName("When cancel order then cancel order and return status 204")
-        public void whenCancelOrderThenCancelOrderAndReturnStatus204() throws IOException {
+        public void whenCancelOrderThenCancelOrderAndReturnStatus204() {
 
             given()
-                    .accept(ContentType.JSON)
+                    .accept(JSON)
                     .pathParam("id", "64fe82fbf968b2939fdd01c7")
                     .basePath("{id}/canceled")
                 .when()
                     .put()
                 .then()
                     .body(blankOrNullString())
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                    .statusCode(NO_CONTENT.value());
         }
 
         @Test
         @DisplayName("When cancel order with id that doesn't exist then return business message and return status 404")
-        public void whenCancelOrderWithIdThatDoesntExistThenReturnBusinessMessageAndReturnStatus404() throws IOException {
+        public void whenCancelOrderWithIdThatDoesntExistThenReturnBusinessMessageAndReturnStatus404() {
 
             var orderId = "74fe6402f988b7939fdd01dc";
 
             given()
-                    .accept(ContentType.JSON)
+                    .accept(JSON)
                     .pathParam("id", orderId)
                     .basePath("{id}/canceled")
                 .when()
@@ -211,17 +210,17 @@ public class OrderManagerControllerTestApi {
                 .then()
                     .body("descriptions", hasSize(1))
                     .body("descriptions", hasItem(String.format("There isn't order for id %s", orderId)))
-                    .statusCode(HttpStatus.NOT_FOUND.value());
+                    .statusCode(NOT_FOUND.value());
         }
 
         @Test
         @DisplayName("When cancel an order that is ready then return business message and return status 400")
-        public void whenCancelAnOrderThatIsReadyThenReturnBusinessMessageAndReturnStatus400() throws IOException {
+        public void whenCancelAnOrderThatIsReadyThenReturnBusinessMessageAndReturnStatus400() {
 
             var orderId = "64fe90abf968b2939fdd01e1";
 
             given()
-                    .accept(ContentType.JSON)
+                    .accept(JSON)
                     .pathParam("id", orderId)
                     .basePath("{id}/canceled")
                 .when()
@@ -229,7 +228,7 @@ public class OrderManagerControllerTestApi {
                 .then()
                     .body("descriptions", hasSize(1))
                     .body("descriptions", hasItem(String.format("The order with id %s cannot be cancelled because it is ready", orderId)))
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(BAD_REQUEST.value());
         }
 
     }

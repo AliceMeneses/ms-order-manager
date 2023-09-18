@@ -1,10 +1,7 @@
 package com.majella.ordermanager.dataprovider.database;
 
 import com.majella.ordermanager.dataprovider.database.repository.OrderRepository;
-import com.majella.ordermanager.helper.IngredientGenerator;
 import com.majella.ordermanager.helper.OrderGenerator;
-import com.majella.ordermanager.helper.PlateGenerator;
-import com.majella.ordermanager.helper.RecipeGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,8 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import static com.majella.ordermanager.core.domain.Status.IN_PRODUCTION;
@@ -38,13 +33,8 @@ public class OrderDatabaseTest {
         @Test
         @DisplayName("When save order then save")
         public void whenSaveOrderThenReturnOrder() {
-
-            var plateIngredient = IngredientGenerator.generate("Filé de frango",1);
-            var plateRecipe = RecipeGenerator.generate("Filé de grelhado", List.of(plateIngredient));
-            var plate = PlateGenerator.generator("64f4d44eb35055bb9b2576b8", new BigDecimal(40), plateRecipe, 2);
-
-            var order = OrderGenerator.generate(null, List.of(plate), IN_PRODUCTION);
-            var orderWithId = OrderGenerator.generate("64ec17cefc18541d85df2e27", List.of(plate), IN_PRODUCTION);
+            var order = OrderGenerator.generate(null, IN_PRODUCTION);
+            var orderWithId = OrderGenerator.generate("64ec17cefc18541d85df2e27", IN_PRODUCTION);
 
             when(orderRepository.save(order)).thenReturn(orderWithId);
 
@@ -60,20 +50,13 @@ public class OrderDatabaseTest {
     class SearchTest {
 
         @Test
-        @DisplayName("When save order by id then save")
+        @DisplayName("When search order by id then return order")
         public void whenSearchOrderByIdThenReturnOrder() {
+            var order = OrderGenerator.generate("64ec17cefc18541d85df2e27", IN_PRODUCTION);
 
-            var orderId = "64ec17cefc18541d85df2e27";
+            when(orderRepository.findById(order.getId())).thenReturn(Optional.of(order));
 
-            var plateIngredient = IngredientGenerator.generate("Filé de frango",1);
-            var plateRecipe = RecipeGenerator.generate("Filé de grelhado", List.of(plateIngredient));
-            var plate = PlateGenerator.generator("64f4d44eb35055bb9b2576b8", new BigDecimal(40), plateRecipe, 2);
-
-            var order = OrderGenerator.generate(orderId, List.of(plate), IN_PRODUCTION);
-
-            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
-
-            var result = orderDatabase.search(orderId);
+            var result = orderDatabase.search(order.getId());
 
             assertThat(result.isPresent()).isTrue();
             assertThat(result.get()).isEqualTo(order);

@@ -7,9 +7,9 @@ import java.util.List;
 
 public class OrderRequestGenerator {
 
-    public static OrderRequest generate(String plateId) {
+    public static OrderRequest generate() {
 
-        var plateRequest = PlateRequestGenerator.generate(plateId, 2);
+        var plateRequest = PlateRequestGenerator.generate();
 
         return OrderRequest.builder()
                 .plates(List.of(plateRequest))
@@ -20,6 +20,23 @@ public class OrderRequestGenerator {
 
         return OrderRequest.builder()
                 .plates(plates)
+                .build();
+    }
+
+    public static OrderRequest generateWithPlatesInNegativeAndZeroQuantity() {
+
+        var plateRequest1 = PlateRequestGenerator.generateWithQuantityEqualToZero();
+        var plateRequest2 = PlateRequestGenerator.generateWithNegativeQuantity();
+        return OrderRequest.builder()
+                .plates(List.of(plateRequest1, plateRequest2))
+                .build();
+    }
+
+    public static OrderRequest generateWithPlatesThatDoesntExist() {
+
+        var plateThatDoesntExist = PlateRequestGenerator.generateWithIdThatDoesntExist();
+        return OrderRequest.builder()
+                .plates(List.of(plateThatDoesntExist))
                 .build();
     }
 

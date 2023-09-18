@@ -4,29 +4,57 @@ import com.majella.ordermanager.core.domain.Order;
 import com.majella.ordermanager.core.domain.Plate;
 import com.majella.ordermanager.core.domain.Status;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.majella.ordermanager.core.domain.Status.IN_PRODUCTION;
 
 public class OrderGenerator {
 
-    public static Order generate(String orderId, String plateId) {
+    public static Order generate(String id, Status status) {
 
-        var plate = Plate.builder()
-                .id(plateId)
-                .quantity(2)
-                .build();
-
+        var grilledChickenPlate = PlateGenerator.generatorGrilledChickenPlate();
         return Order.builder()
-                .id(orderId)
-                .plates(List.of(plate))
+                .id(id)
+                .plates(List.of(grilledChickenPlate))
+                .status(status)
                 .build();
     }
 
-    public static Order generate(String orderId, List<Plate> plates, Status status) {
+    public static Order generateReference() {
+
+        var grilledChickenPlate = PlateGenerator.generatorReferenceToTheGrilledChickenPlate();
+        return Order.builder()
+                .plates(List.of(grilledChickenPlate))
+                .status(IN_PRODUCTION)
+                .build();
+    }
+
+    public static Order generateWithTwoPlates(String id, Status status) {
+
+        var grilledChickenPlate = PlateGenerator.generatorGrilledChickenPlate();
+        var beefPlate = PlateGenerator.generatorBeefPlate();
 
         return Order.builder()
-                .id(orderId)
-                .plates(plates)
+                .id(id)
+                .plates(List.of(grilledChickenPlate, beefPlate))
                 .status(status)
+                .build();
+    }
+
+    public static Order generateWithReferenceToTheTwoPlates() {
+
+        List<Plate> plates = new ArrayList<>();
+
+        var grilledChickenPlate = PlateGenerator.generatorReferenceToTheGrilledChickenPlate();
+        var beefPlate = PlateGenerator.generatorReferenceToTheBeefPlate();
+
+        plates.add(grilledChickenPlate);
+        plates.add(beefPlate);
+
+        return Order.builder()
+                .plates(plates)
+                .status(IN_PRODUCTION)
                 .build();
     }
 
