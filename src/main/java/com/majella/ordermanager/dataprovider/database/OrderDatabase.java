@@ -24,9 +24,4 @@ public class OrderDatabase implements OrderGateway {
         return orderRepository.findById(id);
     }
 
-    @Override
-    public void update(Order order) {
-        orderRepository.save(order);
-    }
-
 }
